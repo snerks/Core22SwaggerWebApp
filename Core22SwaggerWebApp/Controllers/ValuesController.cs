@@ -8,13 +8,20 @@ using Microsoft.Extensions.Logging;
 
 namespace Core22SwaggerWebApp.Controllers
 {
-    public class MyInfo
+    public class CurrencyGetViewModel
     {
-        public int Id { get; set; }
+        public CurrencyGetViewModel(string isoCode, string symbol, string name)
+        {
+            IsoCode = isoCode ?? throw new ArgumentNullException(nameof(isoCode));
+            Symbol = symbol ?? throw new ArgumentNullException(nameof(symbol));
+            Name = name ?? throw new ArgumentNullException(nameof(name));
+        }
 
-        public string MyString { get; set; }
+        public string IsoCode { get; }
 
-        public DateTime MyDateTime { get; set; }
+        public string Symbol { get; }
+
+        public string Name { get; }
     }
 
     [Route("api/[controller]")]
@@ -30,29 +37,46 @@ namespace Core22SwaggerWebApp.Controllers
 
         // GET api/values
         [HttpGet]
-        public ActionResult<IEnumerable<string>> Get()
+        public ActionResult<IEnumerable<CurrencyGetViewModel>> Get()
         {
-            var result = new string[] { "value1", "value2" };
+            var currenciesMap = new Dictionary<string, CurrencyGetViewModel>
+            {
+                ["GBP"] = new CurrencyGetViewModel("GBP", "£", "Pound sterling"),
+                ["EUR"] = new CurrencyGetViewModel("EUR", "€", "Euro"),
+                ["USD"] = new CurrencyGetViewModel("USD", "$", "United States dollar"),
+                ["AUD"] = new CurrencyGetViewModel("AUD", "$", "Australian dollar"),
+                ["ABC"] = new CurrencyGetViewModel("ABC", "$", "ABC dollar"),
+                ["DEF"] = new CurrencyGetViewModel("DEF", "$", "DEF dollar"),
+            };
+
+            foreach (var key in currenciesMap.Keys)
+            {
+                Logger.LogInformation("In my wallet I have {Key}: {@Currency}", key, currenciesMap[key]);
+            }
+
+            return currenciesMap.Values;
+
+            // var result = new string[] { "value1", "value2" };
 
             //Logger.LogDebug("{result}");
             //Logger.LogInformation("Result was: {@result}", result);
 
-            var position = new { Latitude = 25, Longitude = 134 };
-            var elapsedMs = 34;
+            // var position = new { Latitude = 25, Longitude = 134 };
+            // var elapsedMs = 34;
 
-            Logger.LogInformation("Processed {@Position} in {Elapsed:000} ms.", position, elapsedMs);
-            Logger.LogInformation("Returned {@Result}", result.ToList());
+            // Logger.LogInformation("Processed {@Position} in {Elapsed:000} ms.", position, elapsedMs);
+            // Logger.LogInformation("Returned {@Result}", result.ToList());
 
-            var myInfo = new MyInfo
-            {
-                Id = 88,
-                MyDateTime = DateTime.UtcNow,
-                MyString = "Sample MyString"
-            };
+            // var myInfo = new MyInfo
+            // {
+            //     Id = 88,
+            //     MyDateTime = DateTime.UtcNow,
+            //     MyString = "Sample MyString"
+            // };
 
-            Logger.LogInformation("Returned {@MyInfo}", myInfo);
+            // Logger.LogInformation("Returned {@MyInfo}", myInfo);
 
-            return result;
+            // return result;
         }
 
         // GET api/values/5
