@@ -55,6 +55,8 @@ namespace Core22SwaggerWebApp.Controllers
         public string Symbol { get; }
 
         public string Name { get; }
+
+        public bool IsDefault { get; set; }
     }
 
     [Route("api/[controller]")]
@@ -113,12 +115,21 @@ namespace Core22SwaggerWebApp.Controllers
             {
                 try
                 {
-                    currenciesMap.Add(
-                        currenciesItem.IsoCode,
-                        new CurrencyGetViewModel(
+                    var currencyGetViewModel = new CurrencyGetViewModel(
                             currenciesItem.IsoCode,
                             currenciesItem.Symbol,
-                            currenciesItem.Name));
+                            currenciesItem.Name)
+                    {
+                        IsDefault = currenciesItem.IsoCode == currenciesSettings.DefaultIsoCode
+                    };
+
+                    currenciesMap.Add(
+                         currenciesItem.IsoCode,
+                         currencyGetViewModel);
+
+                    //bool wasAddSuccessful = currenciesMap.TryAdd(
+                    //    currenciesItem.IsoCode,
+                    //    currencyGetViewModel);
                 }
                 catch (ArgumentException ex)
                 {
