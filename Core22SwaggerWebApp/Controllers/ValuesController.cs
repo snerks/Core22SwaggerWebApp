@@ -133,29 +133,33 @@ namespace Core22SwaggerWebApp.Controllers
             //var currenciesSettings = CurrenciesSettings;
             //Console.WriteLine(currenciesSettings.DefaultIsoCode);
 
-            var currenciesSettings = CurrenciesSettings;
+            //var currenciesSettings = CurrenciesSettings;
 
             //var isoCodeCurrenciesMap = 
             //    new Dictionary<string, CurrencyGetViewModel>(StringComparer.CurrentCultureIgnoreCase);
 
-            foreach (var currenciesItem in currenciesSettings.Currencies)
+            var normalisedDefaultIsoCode = CurrenciesSettings.DefaultIsoCode?.ToUpper().Trim();
+
+            foreach (var currenciesItem in CurrenciesSettings.Currencies)
             {
                 try
                 {
+                    var normalisedIsoCode = currenciesItem.IsoCode?.ToUpper();
+
                     var currencyGetViewModel = new CurrencyGetViewModel(
-                            currenciesItem.IsoCode,
+                            normalisedIsoCode,
                             currenciesItem.Symbol,
-                            currenciesItem.Name)
-                    {
-                        IsDefault = currenciesItem.IsoCode == currenciesSettings.DefaultIsoCode
-                    };
+                            currenciesItem.Name);
+
+                    currencyGetViewModel.IsDefault =
+                        normalisedIsoCode == normalisedDefaultIsoCode;
 
                     _isoCodeCurrenciesMap.Add(
-                         currenciesItem.IsoCode,
+                         normalisedIsoCode,
                          currencyGetViewModel);
 
                     //bool wasAddSuccessful = currenciesMap.TryAdd(
-                    //    currenciesItem.IsoCode,
+                    //    normalisedIsoCode,
                     //    currencyGetViewModel);
                 }
                 catch (ArgumentException ex)
