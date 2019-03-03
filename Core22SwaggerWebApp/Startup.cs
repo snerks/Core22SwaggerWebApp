@@ -20,7 +20,7 @@ namespace Core22SwaggerWebApp
     public static class ServiceCollectionExtensions
     {
         public static TConfig ConfigurePoco<TConfig>(
-            this IServiceCollection services, 
+            this IServiceCollection services,
             IConfiguration configuration) where TConfig : class, new()
         {
             if (services == null) throw new ArgumentNullException(nameof(services));
@@ -52,11 +52,7 @@ namespace Core22SwaggerWebApp
             //        services.AddMvc();
 
             // Register the Swagger generator, defining 1 or more Swagger documents
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new Info { Title = "My API", Version = "v1" });
-            });
-
+            services.AddSwaggerGen(c => c.SwaggerDoc("v1", new Info { Title = "My API", Version = "v1" }));
 
             //Log.Logger = new LoggerConfiguration()
             //    .WriteTo.File("log.txt")
@@ -91,7 +87,7 @@ namespace Core22SwaggerWebApp
             //// Use of IOptions<T>
             //var currenciesSettingsSection = Configuration.GetSection("CustomSettings:Currency");
             //services.Configure<CurrenciesSettings>(currenciesSettingsSection);
-           
+
             //var customSettingsSection = Configuration.GetSection("CustomSettings");
             //services.Configure<CustomSettings>(customSettingsSection);
 
@@ -109,10 +105,7 @@ namespace Core22SwaggerWebApp
 
             // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), 
             // specifying the Swagger JSON endpoint.
-            app.UseSwaggerUI(c =>
-            {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
-            });
+            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1"));
 
             if (env.IsDevelopment())
             {

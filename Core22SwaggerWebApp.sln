@@ -5,7 +5,12 @@ VisualStudioVersion = 15.0.28307.102
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core22SwaggerWebApp", "Core22SwaggerWebApp\Core22SwaggerWebApp.csproj", "{24F2F5E1-495D-4D9F-B6C6-43090819B285}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core22SwaggerWebApp.UnitTest", "Core22SwaggerWebApp.UnitTest\Core22SwaggerWebApp.UnitTest.csproj", "{9CFBF02E-A7B4-4061-845F-656BDC4554B6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core22SwaggerWebApp.UnitTest", "Core22SwaggerWebApp.UnitTest\Core22SwaggerWebApp.UnitTest.csproj", "{9CFBF02E-A7B4-4061-845F-656BDC4554B6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E9B3A3E6-8D72-463D-9AD9-5F3158DE8C02}"
+	ProjectSection(SolutionItems) = preProject
+		MyRuleSet.ruleset = MyRuleSet.ruleset
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -48,6 +48,10 @@ namespace Core22SwaggerWebApp.Controllers
             IsoCode = isoCode ?? throw new ArgumentNullException(nameof(isoCode));
             Symbol = symbol ?? throw new ArgumentNullException(nameof(symbol));
             Name = name ?? throw new ArgumentNullException(nameof(name));
+
+            IsoCode = IsoCode.Trim().ToUpper();
+            Symbol = Symbol.Trim();
+            Name = Name.Trim();
         }
 
         public string IsoCode { get; }
@@ -81,11 +85,8 @@ namespace Core22SwaggerWebApp.Controllers
         public CustomSettings CustomSettings { get; }
         public CurrenciesSettings CurrenciesSettings { get; }
 
-        //public IOptions<CurrenciesSettings> CurrenciesSettings { get; }
-        //public IOptions<CustomSettings> CustomSettings { get; }
-
-        private readonly Dictionary<string, CurrencyGetViewModel> 
-            _isoCodeCurrenciesMap = new Dictionary<string, CurrencyGetViewModel>(StringComparer.CurrentCultureIgnoreCase);
+        public Dictionary<string, CurrencyGetViewModel> IsoCodeCurrenciesMap { get; } =
+            new Dictionary<string, CurrencyGetViewModel>(StringComparer.CurrentCultureIgnoreCase);
 
         // GET api/values
         [HttpGet]
@@ -120,9 +121,9 @@ namespace Core22SwaggerWebApp.Controllers
 
         private Dictionary<string, CurrencyGetViewModel> GetIsoCodeCurrenciesMap()
         {
-            if (_isoCodeCurrenciesMap.Keys.Any())
+            if (IsoCodeCurrenciesMap.Keys.Any())
             {
-                return _isoCodeCurrenciesMap;
+                return IsoCodeCurrenciesMap;
             }
 
             ////var customSettings = CustomSettings.Value;
@@ -144,7 +145,7 @@ namespace Core22SwaggerWebApp.Controllers
             {
                 try
                 {
-                    var normalisedIsoCode = currenciesItem.IsoCode?.ToUpper();
+                    var normalisedIsoCode = currenciesItem.IsoCode?.ToUpper().Trim();
 
                     var currencyGetViewModel = new CurrencyGetViewModel(
                             normalisedIsoCode,
@@ -154,7 +155,7 @@ namespace Core22SwaggerWebApp.Controllers
                     currencyGetViewModel.IsDefault =
                         normalisedIsoCode == normalisedDefaultIsoCode;
 
-                    _isoCodeCurrenciesMap.Add(
+                    IsoCodeCurrenciesMap.Add(
                          normalisedIsoCode,
                          currencyGetViewModel);
 
@@ -169,7 +170,7 @@ namespace Core22SwaggerWebApp.Controllers
                 }
             }
 
-            return _isoCodeCurrenciesMap;
+            return IsoCodeCurrenciesMap;
         }
 
         // GET api/values/5
