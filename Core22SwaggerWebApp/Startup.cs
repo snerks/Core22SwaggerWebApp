@@ -98,6 +98,7 @@ namespace Core22SwaggerWebApp
             // Use of Poco Binding
             // https://www.strathweb.com/2016/09/strongly-typed-configuration-in-asp-net-core-without-ioptionst/
             services.ConfigurePoco<CustomSettings>(Configuration.GetSection("CustomSettings"));
+            services.ConfigurePoco<CurrenciesSettings>(Configuration.GetSection("CustomSettings:Currency"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

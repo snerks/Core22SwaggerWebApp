@@ -67,16 +67,19 @@ namespace Core22SwaggerWebApp.Controllers
             ILogger<ValuesController> logger,
             //IOptions<CustomSettings> customSettings,
             //IOptions<CurrenciesSettings> currenciesSettings,
-            CustomSettings customSettings)
+            CustomSettings customSettings,
+            CurrenciesSettings currenciesSettings)
         {
             Logger = logger ?? throw new ArgumentNullException(nameof(logger));
             CustomSettings = customSettings ?? throw new ArgumentNullException(nameof(customSettings));
+            CurrenciesSettings = currenciesSettings ?? throw new ArgumentNullException(nameof(currenciesSettings));
             //CurrenciesSettings = currenciesSettings ?? throw new ArgumentNullException(nameof(currenciesSettings));
             //CustomSettings = customSettings ?? throw new ArgumentNullException(nameof(customSettings));
         }
 
         public ILogger<ValuesController> Logger { get; }
         public CustomSettings CustomSettings { get; }
+        public CurrenciesSettings CurrenciesSettings { get; }
 
         //public IOptions<CurrenciesSettings> CurrenciesSettings { get; }
         //public IOptions<CustomSettings> CustomSettings { get; }
@@ -122,15 +125,15 @@ namespace Core22SwaggerWebApp.Controllers
                 return _isoCodeCurrenciesMap;
             }
 
-            //var customSettings = CustomSettings.Value;
-            var customSettings = CustomSettings;
-            Console.WriteLine(customSettings.Currency.DefaultIsoCode);
+            ////var customSettings = CustomSettings.Value;
+            //var customSettings = CustomSettings;
+            //Console.WriteLine(customSettings.Currency.DefaultIsoCode);
 
             //var currenciesSettings = CurrenciesSettings.Value;
             //var currenciesSettings = CurrenciesSettings;
             //Console.WriteLine(currenciesSettings.DefaultIsoCode);
 
-            var currenciesSettings = customSettings.Currency;
+            var currenciesSettings = CurrenciesSettings;
 
             //var isoCodeCurrenciesMap = 
             //    new Dictionary<string, CurrencyGetViewModel>(StringComparer.CurrentCultureIgnoreCase);
@@ -194,22 +197,22 @@ namespace Core22SwaggerWebApp.Controllers
             return NotFound();
         }
 
-        // POST api/values
-        [HttpPost]
-        public void Post([FromBody] string value)
-        {
-        }
+        //// POST api/values
+        //[HttpPost]
+        //public void Post([FromBody] string value)
+        //{
+        //}
 
-        // PUT api/values/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
+        //// PUT api/values/5
+        //[HttpPut("{id}")]
+        //public void Put(int id, [FromBody] string value)
+        //{
+        //}
 
-        // DELETE api/values/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
-        }
+        //// DELETE api/values/5
+        //[HttpDelete("{id}")]
+        //public void Delete(int id)
+        //{
+        //}
     }
 }
