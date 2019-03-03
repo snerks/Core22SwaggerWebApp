@@ -16,22 +16,22 @@ using Swashbuckle.AspNetCore.Swagger;
 
 namespace Core22SwaggerWebApp
 {
-    // https://www.strathweb.com/2016/09/strongly-typed-configuration-in-asp-net-core-without-ioptionst/
-    public static class ServiceCollectionExtensions
-    {
-        public static TConfig ConfigurePoco<TConfig>(
-            this IServiceCollection services,
-            IConfiguration configuration) where TConfig : class, new()
-        {
-            if (services == null) throw new ArgumentNullException(nameof(services));
-            if (configuration == null) throw new ArgumentNullException(nameof(configuration));
+    //// https://www.strathweb.com/2016/09/strongly-typed-configuration-in-asp-net-core-without-ioptionst/
+    //public static class ServiceCollectionExtensions
+    //{
+    //    public static TConfig ConfigurePoco<TConfig>(
+    //        this IServiceCollection services,
+    //        IConfiguration configuration) where TConfig : class, new()
+    //    {
+    //        if (services == null) throw new ArgumentNullException(nameof(services));
+    //        if (configuration == null) throw new ArgumentNullException(nameof(configuration));
 
-            var config = new TConfig();
-            configuration.Bind(config);
-            services.AddSingleton(config);
-            return config;
-        }
-    }
+    //        var config = new TConfig();
+    //        configuration.Bind(config);
+    //        services.AddSingleton(config);
+    //        return config;
+    //    }
+    //}
 
     public class Startup
     {
@@ -93,8 +93,11 @@ namespace Core22SwaggerWebApp
 
             // Use of Poco Binding
             // https://www.strathweb.com/2016/09/strongly-typed-configuration-in-asp-net-core-without-ioptionst/
-            services.ConfigurePoco<CustomSettings>(Configuration.GetSection("CustomSettings"));
-            services.ConfigurePoco<CurrenciesSettings>(Configuration.GetSection("CustomSettings:Currency"));
+            //services.ConfigurePoco<CustomSettings>(Configuration.GetSection("CustomSettings"));
+            //services.ConfigurePoco<CurrenciesSettings>(Configuration.GetSection("CustomSettings:Currency"));
+
+            ConfigurePoco<CustomSettings>(services, Configuration.GetSection("CustomSettings"));
+            ConfigurePoco<CurrenciesSettings>(services, Configuration.GetSection("CustomSettings:Currency"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -119,6 +122,20 @@ namespace Core22SwaggerWebApp
 
             app.UseHttpsRedirection();
             app.UseMvc();
+        }
+
+        // https://www.strathweb.com/2016/09/strongly-typed-configuration-in-asp-net-core-without-ioptionst/
+        public TConfig ConfigurePoco<TConfig>(
+            IServiceCollection services,
+            IConfiguration configuration) where TConfig : class, new()
+        {
+            if (services == null) throw new ArgumentNullException(nameof(services));
+            if (configuration == null) throw new ArgumentNullException(nameof(configuration));
+
+            var config = new TConfig();
+            configuration.Bind(config);
+            services.AddSingleton(config);
+            return config;
         }
     }
 }
