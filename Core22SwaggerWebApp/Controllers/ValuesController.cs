@@ -77,6 +77,9 @@ namespace Core22SwaggerWebApp.Controllers
         public IOptions<CurrenciesSettings> CurrenciesSettings { get; }
         public IOptions<CustomSettings> CustomSettings { get; }
 
+        private readonly Dictionary<string, CurrencyGetViewModel> 
+            _isoCodeCurrenciesMap = new Dictionary<string, CurrencyGetViewModel>(StringComparer.CurrentCultureIgnoreCase);
+
         // GET api/values
         [HttpGet]
         public ActionResult<IEnumerable<CurrencyGetViewModel>> Get()
@@ -103,13 +106,26 @@ namespace Core22SwaggerWebApp.Controllers
             //    .GetSection("CustomSettings:Currency:Currencies")
             //    .Get<List<CurrencySettings>>();
 
+            Dictionary<string, CurrencyGetViewModel> currenciesMap = GetIsoCodeCurrenciesMap();
+
+            return currenciesMap.Values;
+        }
+
+        private Dictionary<string, CurrencyGetViewModel> GetIsoCodeCurrenciesMap()
+        {
+            if (_isoCodeCurrenciesMap.Keys.Any())
+            {
+                return _isoCodeCurrenciesMap;
+            }
+
             var customSettings = CustomSettings.Value;
             Console.WriteLine(customSettings.Currency.DefaultIsoCode);
 
             var currenciesSettings = CurrenciesSettings.Value;
             Console.WriteLine(currenciesSettings.DefaultIsoCode);
 
-            var currenciesMap = new Dictionary<string, CurrencyGetViewModel>();
+            //var isoCodeCurrenciesMap = 
+            //    new Dictionary<string, CurrencyGetViewModel>(StringComparer.CurrentCultureIgnoreCase);
 
             foreach (var currenciesItem in currenciesSettings.Currencies)
             {
@@ -123,7 +139,7 @@ namespace Core22SwaggerWebApp.Controllers
                         IsDefault = currenciesItem.IsoCode == currenciesSettings.DefaultIsoCode
                     };
 
-                    currenciesMap.Add(
+                    _isoCodeCurrenciesMap.Add(
                          currenciesItem.IsoCode,
                          currencyGetViewModel);
 
@@ -138,24 +154,29 @@ namespace Core22SwaggerWebApp.Controllers
                 }
             }
 
-            return currenciesMap.Values;
+            return _isoCodeCurrenciesMap;
         }
 
         // GET api/values/5
-        [HttpGet("{id}")]
+        [HttpGet("{isoCode}")]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesDefaultResponseType]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public ActionResult<string> Get(int id)
+        public ActionResult<CurrencyGetViewModel> Get(string isoCode)
         {
-            if (id == 99)
+            Dictionary<string, CurrencyGetViewModel> currenciesMap = GetIsoCodeCurrenciesMap();
+
+            if (currenciesMap == null)
             {
-                throw new ArgumentOutOfRangeException(nameof(id), "value must not be 99");
+                return NotFound();
             }
 
-            return "value";
+            if (currenciesMap.ContainsKey(isoCode))
+            {
+                return currenciesMap[isoCode];
+            }
 
-            // return NotFound();
+            return NotFound();
         }
 
         // POST api/values
