@@ -65,17 +65,21 @@ namespace Core22SwaggerWebApp.Controllers
     {
         public ValuesController(
             ILogger<ValuesController> logger,
-            IOptions<CustomSettings> customSettings,
-            IOptions<CurrenciesSettings> currenciesSettings)
+            //IOptions<CustomSettings> customSettings,
+            //IOptions<CurrenciesSettings> currenciesSettings,
+            CustomSettings customSettings)
         {
             Logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            CurrenciesSettings = currenciesSettings ?? throw new ArgumentNullException(nameof(currenciesSettings));
             CustomSettings = customSettings ?? throw new ArgumentNullException(nameof(customSettings));
+            //CurrenciesSettings = currenciesSettings ?? throw new ArgumentNullException(nameof(currenciesSettings));
+            //CustomSettings = customSettings ?? throw new ArgumentNullException(nameof(customSettings));
         }
 
         public ILogger<ValuesController> Logger { get; }
-        public IOptions<CurrenciesSettings> CurrenciesSettings { get; }
-        public IOptions<CustomSettings> CustomSettings { get; }
+        public CustomSettings CustomSettings { get; }
+
+        //public IOptions<CurrenciesSettings> CurrenciesSettings { get; }
+        //public IOptions<CustomSettings> CustomSettings { get; }
 
         private readonly Dictionary<string, CurrencyGetViewModel> 
             _isoCodeCurrenciesMap = new Dictionary<string, CurrencyGetViewModel>(StringComparer.CurrentCultureIgnoreCase);
@@ -118,11 +122,15 @@ namespace Core22SwaggerWebApp.Controllers
                 return _isoCodeCurrenciesMap;
             }
 
-            var customSettings = CustomSettings.Value;
+            //var customSettings = CustomSettings.Value;
+            var customSettings = CustomSettings;
             Console.WriteLine(customSettings.Currency.DefaultIsoCode);
 
-            var currenciesSettings = CurrenciesSettings.Value;
-            Console.WriteLine(currenciesSettings.DefaultIsoCode);
+            //var currenciesSettings = CurrenciesSettings.Value;
+            //var currenciesSettings = CurrenciesSettings;
+            //Console.WriteLine(currenciesSettings.DefaultIsoCode);
+
+            var currenciesSettings = customSettings.Currency;
 
             //var isoCodeCurrenciesMap = 
             //    new Dictionary<string, CurrencyGetViewModel>(StringComparer.CurrentCultureIgnoreCase);
@@ -164,16 +172,23 @@ namespace Core22SwaggerWebApp.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public ActionResult<CurrencyGetViewModel> Get(string isoCode)
         {
-            Dictionary<string, CurrencyGetViewModel> currenciesMap = GetIsoCodeCurrenciesMap();
+            if (isoCode == null)
+            {
+                return BadRequest();
+            }
 
-            if (currenciesMap == null)
+            var isoCodeCurrenciesMap = GetIsoCodeCurrenciesMap();
+
+            if (isoCodeCurrenciesMap == null)
             {
                 return NotFound();
             }
 
-            if (currenciesMap.ContainsKey(isoCode))
+            var key = isoCode.Trim();
+
+            if (isoCodeCurrenciesMap.ContainsKey(key))
             {
-                return currenciesMap[isoCode];
+                return isoCodeCurrenciesMap[key];
             }
 
             return NotFound();

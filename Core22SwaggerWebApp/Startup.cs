@@ -16,6 +16,23 @@ using Swashbuckle.AspNetCore.Swagger;
 
 namespace Core22SwaggerWebApp
 {
+    // https://www.strathweb.com/2016/09/strongly-typed-configuration-in-asp-net-core-without-ioptionst/
+    public static class ServiceCollectionExtensions
+    {
+        public static TConfig ConfigurePoco<TConfig>(
+            this IServiceCollection services, 
+            IConfiguration configuration) where TConfig : class, new()
+        {
+            if (services == null) throw new ArgumentNullException(nameof(services));
+            if (configuration == null) throw new ArgumentNullException(nameof(configuration));
+
+            var config = new TConfig();
+            configuration.Bind(config);
+            services.AddSingleton(config);
+            return config;
+        }
+    }
+
     public class Startup
     {
         public Startup(IConfiguration configuration)
@@ -59,24 +76,28 @@ namespace Core22SwaggerWebApp
             //var currenciesSettings = new CurrenciesSettings();
             //Configuration.GetSection("Currencies").Bind(currenciesSettings);
 
-            // Use of Get<>
-            var currenciesSettings = 
-                Configuration
-                .GetSection("CustomSettings:Currency")
-                .Get<CurrenciesSettings>();
+            //// Use of Get<>
+            //var currenciesSettings = 
+            //    Configuration
+            //    .GetSection("CustomSettings:Currency")
+            //    .Get<CurrenciesSettings>();
 
-            //var currencySettings = Configuration.GetSection("CustomSettings:Currency:Currencies").Get<List<CurrencySettings>>();
-            currenciesSettings.Currencies = 
-                Configuration
-                .GetSection("CustomSettings:Currency:Currencies")
-                .Get<List<CurrencySettings>>();
+            ////var currencySettings = Configuration.GetSection("CustomSettings:Currency:Currencies").Get<List<CurrencySettings>>();
+            //currenciesSettings.Currencies = 
+            //    Configuration
+            //    .GetSection("CustomSettings:Currency:Currencies")
+            //    .Get<List<CurrencySettings>>();
 
-            // Use of IOptions<T>
-            var currenciesSettingsSection = Configuration.GetSection("CustomSettings:Currency");
-            services.Configure<CurrenciesSettings>(currenciesSettingsSection);
+            //// Use of IOptions<T>
+            //var currenciesSettingsSection = Configuration.GetSection("CustomSettings:Currency");
+            //services.Configure<CurrenciesSettings>(currenciesSettingsSection);
            
-            var customSettingsSection = Configuration.GetSection("CustomSettings");
-            services.Configure<CustomSettings>(customSettingsSection);
+            //var customSettingsSection = Configuration.GetSection("CustomSettings");
+            //services.Configure<CustomSettings>(customSettingsSection);
+
+            // Use of Poco Binding
+            // https://www.strathweb.com/2016/09/strongly-typed-configuration-in-asp-net-core-without-ioptionst/
+            services.ConfigurePoco<CustomSettings>(Configuration.GetSection("CustomSettings"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
