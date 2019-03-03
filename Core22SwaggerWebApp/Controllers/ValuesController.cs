@@ -5,9 +5,42 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 
 namespace Core22SwaggerWebApp.Controllers
 {
+    // Match Property Names with Config Key Names
+    public class CustomSettings
+    {
+        public CurrenciesSettings Currency { get; set; } = new CurrenciesSettings();
+    }
+
+    public class CurrenciesSettings
+    {
+        public string DefaultIsoCode { get; set; }
+
+        //[JsonProperty(PropertyName = "Currencies")]
+        public List<CurrencySettings> Currencies { get; set; } = new List<CurrencySettings>();
+    }
+
+    public class CurrencySettings
+    {
+        public string IsoCode { get; set; }
+
+        public string Symbol { get; set; }
+
+        public string Name { get; set; }
+    }
+
+    public class CurrencyService
+    {
+        public IEnumerable<CurrencyGetViewModel> GetAll()
+        {
+            return new List<CurrencyGetViewModel>();
+        }
+    }
+
     public class CurrencyGetViewModel
     {
         public CurrencyGetViewModel(string isoCode, string symbol, string name)
@@ -28,55 +61,73 @@ namespace Core22SwaggerWebApp.Controllers
     [ApiController]
     public class ValuesController : ControllerBase
     {
-        public ValuesController(ILogger<ValuesController> logger)
+        public ValuesController(
+            ILogger<ValuesController> logger,
+            IOptions<CustomSettings> customSettings,
+            IOptions<CurrenciesSettings> currenciesSettings)
         {
             Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            CurrenciesSettings = currenciesSettings ?? throw new ArgumentNullException(nameof(currenciesSettings));
+            CustomSettings = customSettings ?? throw new ArgumentNullException(nameof(customSettings));
         }
 
         public ILogger<ValuesController> Logger { get; }
+        public IOptions<CurrenciesSettings> CurrenciesSettings { get; }
+        public IOptions<CustomSettings> CustomSettings { get; }
 
         // GET api/values
         [HttpGet]
         public ActionResult<IEnumerable<CurrencyGetViewModel>> Get()
         {
-            var currenciesMap = new Dictionary<string, CurrencyGetViewModel>
-            {
-                ["GBP"] = new CurrencyGetViewModel("GBP", "£", "Pound sterling"),
-                ["EUR"] = new CurrencyGetViewModel("EUR", "€", "Euro"),
-                ["USD"] = new CurrencyGetViewModel("USD", "$", "United States dollar"),
-                ["AUD"] = new CurrencyGetViewModel("AUD", "$", "Australian dollar"),
-                ["ABC"] = new CurrencyGetViewModel("ABC", "$", "ABC dollar"),
-                ["DEF"] = new CurrencyGetViewModel("DEF", "$", "DEF dollar"),
-            };
+            // var currenciesMap = new Dictionary<string, CurrencyGetViewModel>
+            // {
+            //     ["GBP"] = new CurrencyGetViewModel("GBP", "£", "Pound sterling"),
+            //     ["EUR"] = new CurrencyGetViewModel("EUR", "€", "Euro"),
+            //     ["USD"] = new CurrencyGetViewModel("USD", "$", "United States dollar"),
+            //     ["AUD"] = new CurrencyGetViewModel("AUD", "$", "Australian dollar"),
+            //     ["ABC"] = new CurrencyGetViewModel("ABC", "$", "ABC dollar"),
+            //     ["DEF"] = new CurrencyGetViewModel("DEF", "$", "DEF dollar"),
+            // };
 
-            foreach (var key in currenciesMap.Keys)
+            // foreach (var key in currenciesMap.Keys)
+            // {
+            //     Logger.LogInformation("In my wallet I have {Key}: {@Currency}", key, currenciesMap[key]);
+            // }
+
+            // return currenciesMap.Values;
+
+            //var items = 
+            //    CurrenciesSettings
+            //    .GetSection("CustomSettings:Currency:Currencies")
+            //    .Get<List<CurrencySettings>>();
+
+            var customSettings = CustomSettings.Value;
+            Console.WriteLine(customSettings.Currency.DefaultIsoCode);
+
+            var currenciesSettings = CurrenciesSettings.Value;
+            Console.WriteLine(currenciesSettings.DefaultIsoCode);
+
+            var currenciesMap = new Dictionary<string, CurrencyGetViewModel>();
+
+            foreach (var currenciesItem in currenciesSettings.Currencies)
             {
-                Logger.LogInformation("In my wallet I have {Key}: {@Currency}", key, currenciesMap[key]);
+                try
+                {
+                    currenciesMap.Add(
+                        currenciesItem.IsoCode,
+                        new CurrencyGetViewModel(
+                            currenciesItem.IsoCode,
+                            currenciesItem.Symbol,
+                            currenciesItem.Name));
+                }
+                catch (ArgumentException ex)
+                {
+                    // throw;
+                    Logger.LogWarning("{@Ex}", ex);
+                }
             }
 
             return currenciesMap.Values;
-
-            // var result = new string[] { "value1", "value2" };
-
-            //Logger.LogDebug("{result}");
-            //Logger.LogInformation("Result was: {@result}", result);
-
-            // var position = new { Latitude = 25, Longitude = 134 };
-            // var elapsedMs = 34;
-
-            // Logger.LogInformation("Processed {@Position} in {Elapsed:000} ms.", position, elapsedMs);
-            // Logger.LogInformation("Returned {@Result}", result.ToList());
-
-            // var myInfo = new MyInfo
-            // {
-            //     Id = 88,
-            //     MyDateTime = DateTime.UtcNow,
-            //     MyString = "Sample MyString"
-            // };
-
-            // Logger.LogInformation("Returned {@MyInfo}", myInfo);
-
-            // return result;
         }
 
         // GET api/values/5

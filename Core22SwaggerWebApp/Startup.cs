@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Core22SwaggerWebApp.Controllers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -50,6 +51,32 @@ namespace Core22SwaggerWebApp
             //}
 
             //Log.CloseAndFlush();
+
+            // Add functionality to inject IOptions<T>
+            services.AddOptions();
+
+            // services.Configure<CurrenciesSettings>(Configuration);
+            //var currenciesSettings = new CurrenciesSettings();
+            //Configuration.GetSection("Currencies").Bind(currenciesSettings);
+
+            // Use of Get<>
+            var currenciesSettings = 
+                Configuration
+                .GetSection("CustomSettings:Currency")
+                .Get<CurrenciesSettings>();
+
+            //var currencySettings = Configuration.GetSection("CustomSettings:Currency:Currencies").Get<List<CurrencySettings>>();
+            currenciesSettings.Currencies = 
+                Configuration
+                .GetSection("CustomSettings:Currency:Currencies")
+                .Get<List<CurrencySettings>>();
+
+            // Use of IOptions<T>
+            var currenciesSettingsSection = Configuration.GetSection("CustomSettings:Currency");
+            services.Configure<CurrenciesSettings>(currenciesSettingsSection);
+           
+            var customSettingsSection = Configuration.GetSection("CustomSettings");
+            services.Configure<CustomSettings>(customSettingsSection);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
