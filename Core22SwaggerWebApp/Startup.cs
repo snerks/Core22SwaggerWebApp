@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Core22SwaggerWebApp.Controllers;
@@ -9,6 +10,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -135,31 +137,71 @@ namespace Core22SwaggerWebApp
 
             services
                 .AddHealthChecks()
+                    .AddCheck("culture", () =>
+                    {
+                        const string requiredCultureIsoCode = "en-GB";
+
+                        var currentUICulture = System.Threading.Thread.CurrentThread.CurrentUICulture;
+                        var currentCulture = System.Threading.Thread.CurrentThread.CurrentCulture;
+
+                        var isCurrentUICultureCorrect = currentUICulture.IetfLanguageTag == requiredCultureIsoCode;
+                        var isCurrentCultureCorrect = currentCulture.IetfLanguageTag == requiredCultureIsoCode;
+
+                        var areCurrentCultureSettingsCorrect = isCurrentUICultureCorrect && isCurrentCultureCorrect;
+
+                        if (areCurrentCultureSettingsCorrect)
+                        {
+                            return HealthCheckResult.Healthy();
+                        }
+
+                        var data = new Dictionary<string, object>
+                        {
+                            ["RequiredCurrentUICulture"] = requiredCultureIsoCode,
+                            ["RequiredCurrentCulture"] = requiredCultureIsoCode,
+
+                            ["CurrentUICulture"] = System.Threading.Thread.CurrentThread.CurrentUICulture,
+                            ["CurrentCulture"] = System.Threading.Thread.CurrentThread.CurrentCulture,
+                        };
+
+                        return HealthCheckResult.Unhealthy(
+                            $"Incorrect CurrentCulture Settings",
+                            null,
+                            data);
+                    })
                     .AddCheck("sql", () =>
                     {
-                        //const string _connectionString = "BOGUS";
+                        const string _connectionString = "BOGUS";
 
-                        //try
-                        //{
-                        //    using (var connection = new SqlConnection(_connectionString))
-                        //    {
-                        //        try
-                        //        {
-                        //            connection.Open();
-                        //        }
-                        //        catch (SqlException)
-                        //        {
-                        //            return HealthCheckResult.Unhealthy();
-                        //        }
-                        //    }
-                        //}
-                        //catch (Exception)
-                        //{
-                        //    return HealthCheckResult.Unhealthy();
-                        //}
+                        try
+                        {
+                            using (var connection = new SqlConnection(_connectionString))
+                            {
+                                try
+                                {
+                                    connection.Open();
+                                }
+                                catch (SqlException ex)
+                                {
+                                    return HealthCheckResult.Unhealthy($"SqlException at {DateTime.Now}", ex);
+                                }
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            var data = new Dictionary<string, object>
+                            {
+                                ["CurrentUICulture"] = System.Threading.Thread.CurrentThread.CurrentUICulture,
+                                ["CurrentCulture"] = System.Threading.Thread.CurrentThread.CurrentCulture,
+                            };
 
-                        // return HealthCheckResult.Healthy();
-                        return HealthCheckResult.Unhealthy("Sample Description");
+                            return HealthCheckResult.Unhealthy(
+                                $"Exception : UICulture = [{System.Threading.Thread.CurrentThread.CurrentUICulture}] at {DateTime.Now}", 
+                                ex,
+                                data);
+                        }
+
+                        return HealthCheckResult.Healthy();
+                        //return HealthCheckResult.Unhealthy("Sample Description");
                     });
 
             services.AddHealthChecksUI();
@@ -173,6 +215,25 @@ namespace Core22SwaggerWebApp
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            var supportedCultures = new[]
+            {
+                new CultureInfo("en-US"),
+                new CultureInfo("en-GB"),
+                new CultureInfo("fr"),
+            };
+
+            app.UseRequestLocalization(new RequestLocalizationOptions
+            {
+                //DefaultRequestCulture = new RequestCulture("en-GB"),
+                DefaultRequestCulture = new RequestCulture("en-US"),
+
+                // Formatting numbers, dates, etc.
+                SupportedCultures = supportedCultures,
+
+                // UI strings that we have localized.
+                SupportedUICultures = supportedCultures
+            });
+
             //app.UseHealthChecks("/healthz", new HealthCheckOptions()
             //{
             //    Predicate = _ => true,
