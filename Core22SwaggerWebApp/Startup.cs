@@ -1,14 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 using Core22SwaggerWebApp.Controllers;
+using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Serilog;
@@ -45,11 +49,41 @@ namespace Core22SwaggerWebApp
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services
+                .AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
             //        services.AddDbContext<TodoContext>(opt =>
             //opt.UseInMemoryDatabase("TodoList"));
             //        services.AddMvc();
+
+            //services.AddHealthChecks()
+            //    .AddCheck("sql", () =>
+            //    {
+            //        //const string _connectionString = "BOGUS";
+
+            //        //try
+            //        //{
+            //        //    using (var connection = new SqlConnection(_connectionString))
+            //        //    {
+            //        //        try
+            //        //        {
+            //        //            connection.Open();
+            //        //        }
+            //        //        catch (SqlException)
+            //        //        {
+            //        //            return HealthCheckResult.Unhealthy();
+            //        //        }
+            //        //    }
+            //        //}
+            //        //catch (Exception)
+            //        //{
+            //        //    return HealthCheckResult.Unhealthy();
+            //        //}
+
+            //        //return HealthCheckResult.Healthy();
+            //        return HealthCheckResult.Unhealthy();
+
+            //    });
 
             // Register the Swagger generator, defining 1 or more Swagger documents
             services.AddSwaggerGen(c => c.SwaggerDoc("v1", new Info { Title = "My API", Version = "v1" }));
@@ -98,11 +132,77 @@ namespace Core22SwaggerWebApp
 
             ConfigurePoco<CustomSettings>(services, Configuration.GetSection("CustomSettings"));
             ConfigurePoco<CurrenciesSettings>(services, Configuration.GetSection("CustomSettings:Currency"));
+
+            services
+                .AddHealthChecks()
+                    .AddCheck("sql", () =>
+                    {
+                        //const string _connectionString = "BOGUS";
+
+                        //try
+                        //{
+                        //    using (var connection = new SqlConnection(_connectionString))
+                        //    {
+                        //        try
+                        //        {
+                        //            connection.Open();
+                        //        }
+                        //        catch (SqlException)
+                        //        {
+                        //            return HealthCheckResult.Unhealthy();
+                        //        }
+                        //    }
+                        //}
+                        //catch (Exception)
+                        //{
+                        //    return HealthCheckResult.Unhealthy();
+                        //}
+
+                        // return HealthCheckResult.Healthy();
+                        return HealthCheckResult.Unhealthy("Sample Description");
+                    });
+
+            services.AddHealthChecksUI();
+
+            //.AddUrlGroup(new Uri("http://httpbin.org/status/200"), name: "uri-1")
+            //.AddUrlGroup(new Uri("http://httpbin.org/status/200"), name: "uri-2")
+            //.AddUrlGroup(new Uri("http://httpbin.org/status/500"), name: "uri-3")
+            //.Services
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            //app.UseHealthChecks("/healthz", new HealthCheckOptions()
+            //{
+            //    Predicate = _ => true,
+            //    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+            //})
+            //.UseHealthChecksUI(setup =>
+            //{
+            //    setup.UIPath = "/show-health-ui"; // this is ui path in your browser
+            //    setup.ApiPath = "/health-ui-api"; // the UI ( spa app )  use this path to get information from the store ( this is NOT the healthz path, is internal ui api )
+            //});
+            //// .UseMvc();
+
+            //app.UseHealthChecks("/working", new HealthCheckOptions()
+            //{
+            //    Predicate = _ => true,
+            //    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+            //});
+
+            // Get Status Code only
+            //app.UseHealthChecks("/working");
+
+            // Get Status Code and other info as JSON
+            app.UseHealthChecks("/working", new HealthCheckOptions()
+            {
+                Predicate = _ => true,
+                ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse,
+            });
+
+            app.UseHealthChecksUI();
+
             // Enable middleware to serve generated Swagger as a JSON endpoint.
             app.UseSwagger();
 

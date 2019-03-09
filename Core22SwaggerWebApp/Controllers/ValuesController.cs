@@ -114,14 +114,14 @@ namespace Core22SwaggerWebApp.Controllers
             //    .GetSection("CustomSettings:Currency:Currencies")
             //    .Get<List<CurrencySettings>>();
 
-            Dictionary<string, CurrencyGetViewModel> currenciesMap = GetIsoCodeCurrenciesMap();
+            var currenciesMap = GetIsoCodeCurrenciesMap();
 
             return currenciesMap.Values;
         }
 
         private Dictionary<string, CurrencyGetViewModel> GetIsoCodeCurrenciesMap()
         {
-            if (IsoCodeCurrenciesMap.Keys.Any())
+            if (IsoCodeCurrenciesMap.Keys.Count > 0)
             {
                 return IsoCodeCurrenciesMap;
             }
@@ -150,10 +150,11 @@ namespace Core22SwaggerWebApp.Controllers
                     var currencyGetViewModel = new CurrencyGetViewModel(
                             normalisedIsoCode,
                             currenciesItem.Symbol,
-                            currenciesItem.Name);
-
-                    currencyGetViewModel.IsDefault =
-                        normalisedIsoCode == normalisedDefaultIsoCode;
+                            currenciesItem.Name)
+                    {
+                        IsDefault =
+                        normalisedIsoCode == normalisedDefaultIsoCode
+                    };
 
                     IsoCodeCurrenciesMap.Add(
                          normalisedIsoCode,
