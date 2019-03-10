@@ -13,20 +13,20 @@ using Microsoft.Extensions.Logging;
 using Serilog;
 using Serilog.Events;
 
-//[assembly: ApiConventionType(typeof(DefaultApiConventions))]
-[assembly: ApiConventionType(typeof(CustomApiConventions))]
+[assembly: ApiConventionType(typeof(DefaultApiConventions))]
+//[assembly: ApiConventionType(typeof(CustomApiConventions))]
 
 namespace Core22SwaggerWebApp
 {
-    public static class CustomApiConventions
-    {
-        [ApiConventionNameMatch(ApiConventionNameMatchBehavior.Prefix)]
-        [ProducesDefaultResponseType]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(404)]
-        public static void Get([ApiConventionNameMatch(ApiConventionNameMatchBehavior.Suffix)][ApiConventionTypeMatch(ApiConventionTypeMatchBehavior.Any)] object code)
-        { }
-    }
+    //public static class CustomApiConventions
+    //{
+    //    [ApiConventionNameMatch(ApiConventionNameMatchBehavior.Prefix)]
+    //    [ProducesDefaultResponseType]
+    //    [ProducesResponseType(200)]
+    //    [ProducesResponseType(404)]
+    //    public static void Get([ApiConventionNameMatch(ApiConventionNameMatchBehavior.Suffix)][ApiConventionTypeMatch(ApiConventionTypeMatchBehavior.Any)] object code)
+    //    { }
+    //}
 
     public class Program
     {

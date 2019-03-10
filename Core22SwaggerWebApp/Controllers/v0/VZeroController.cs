@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Core22SwaggerWebApp.Controllers.v0
+namespace Core22SwaggerWebApp.Controllers.V0
 {
     public class VZeroGetViewModel
     {
@@ -24,6 +24,13 @@ namespace Core22SwaggerWebApp.Controllers.v0
             {
                 new VZeroGetViewModel()
             };
+        }
+
+        // POST api/values
+        [HttpPost]
+        [Obsolete]
+        public void Post([FromBody] string value)
+        {
         }
 
         //[HttpGet]
