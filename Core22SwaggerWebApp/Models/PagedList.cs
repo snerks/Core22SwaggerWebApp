@@ -19,10 +19,12 @@ namespace Core22SwaggerWebApp.Models
 
             [FromQuery]
             [Range(1, int.MaxValue, ErrorMessage = "Offset must be greater than 0.")]
+            [Display(Name ="pageNumber")]
             public int? PageNumber { get; set; }
 
             [FromQuery]
             [Range(1, MaximinumPageSize, ErrorMessage = MaximinumPageSizeMessage)]
+            [Display(Name = "pageSize")]
             public int? PageSize { get; set; }
         }
     }

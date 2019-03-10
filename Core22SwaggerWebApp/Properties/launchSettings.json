@@ -12,7 +12,7 @@
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,
-      "launchUrl": "swagger",
+      "launchUrl": "api/currencies",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
@@ -22,7 +22,7 @@
       "commandName": "Executable",
       "executablePath": "C:\\D\\SamplesCore22\\Core22SwaggerWebApp\\Core22SwaggerWebApp\\dotnet.watch.run.bat",
       "launchBrowser": true,
-      "launchUrl": "swagger",
+      "launchUrl": "api/currencies",
       "applicationUrl": "https://localhost:44354;http://localhost:57053",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"

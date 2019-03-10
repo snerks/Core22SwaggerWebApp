@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using AutoFixture;
 using AutoFixture.AutoMoq;
@@ -25,14 +25,14 @@ namespace Core22SwaggerWebApp.UnitTest
             var sut = fixture.Create<ValuesController>();
 
             // Act
-            var result = sut.Get();
+            var result = sut.GetAll();
 
             // Assert
             Assert.NotNull(result);
             result.Should().BeAssignableTo<ActionResult<IEnumerable<CurrencyGetViewModel>>>();
 
             var resultValue = result.Value;
-            Assert.NotEmpty(resultValue);
+            Assert.NotEmpty(resultValue.Items);
         }
     }
 }

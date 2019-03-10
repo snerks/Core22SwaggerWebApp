@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using Core22SwaggerWebApp.Infrastructure;
 using Core22SwaggerWebApp.Models;
@@ -32,10 +33,23 @@ namespace Core22SwaggerWebApp.Controllers
             new Dictionary<string, CurrencyGetViewModel>(StringComparer.CurrentCultureIgnoreCase);
 
         [HttpGet()]
-        [ValidateModel]
+        //[ProducesResponseType(StatusCodes.Status200OK)]
+        //[ProducesResponseType(typeof(ApiError), StatusCodes.Status400BadRequest)]
+        //[ProducesDefaultResponseType]
+        //[ValidateModel]
         //[ProducesResponseType(200, Type = typeof(PagedList<CurrencyGetViewModel>))]
         public ActionResult<PagedList<CurrencyGetViewModel>> GetAll([FromQuery] PagingOptions pagingOptions)
         {
+            //if (!ModelState.IsValid)
+            //{
+            //    return new BadRequestObjectResult(new ApiError(ModelState));
+            //}
+
+            //var context = new ValidationContext(pagingOptions, serviceProvider: null, items: null);
+            //var validationResults = new List<ValidationResult>();
+
+            //bool isValid = Validator.TryValidateObject(pagingOptions, context, validationResults, true);
+
             Logger.LogDebug("Getting one page of items");
 
             var currenciesMap = GetIsoCodeCurrenciesMap();

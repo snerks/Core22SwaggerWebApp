@@ -26,21 +26,72 @@ namespace Core22SwaggerWebApp.Models
         /// <param name="modelState"></param>
         public ApiError(ModelStateDictionary modelState)
         {
-            Message = ModelBindingErrorMessage;
+            if (modelState == null)
+                throw new System.ArgumentNullException(nameof(modelState));
 
-            Detail = modelState
-                .FirstOrDefault(x => x.Value.Errors.Any())
-                .Value?.Errors?.FirstOrDefault()?.ErrorMessage;
+            Message = ModelBindingErrorMessage;
+            ModelState = modelState;
+
+            //Detail = modelState
+            //    .FirstOrDefault(x => x.Value.Errors.Any())
+            //    .Value?.Errors?.FirstOrDefault()?.ErrorMessage;
         }
 
         public string Message { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public string Detail { get; set; }
+        public ModelStateDictionary Detail {
+            get
+            {
+                var newModelStateDictionary = new ModelStateDictionary();
+
+                foreach (var element in ModelState)
+                {
+                    if (!string.IsNullOrWhiteSpace(element.Key))
+                    {
+                        var keyParts = element.Key.Split('.');
+                        var camelKeyParts = new List<string>();
+
+                        foreach (var keyPart in keyParts)
+                        {
+                            camelKeyParts
+                                .Add(
+                                    keyPart.First().ToString().ToLowerInvariant() + 
+                                    (keyPart.Length > 1 ? keyPart.Substring(1) : ""));
+                        }
+
+                        // You can (add a / change this) code if the returned key is not
+                        // composed from the ObjectName.Property, such as when it is 
+                        // composed from the property name
+
+                        var newKey = camelKeyParts.Aggregate((i, j) => i + "." + j);
+
+                        //newModelStateDictionary
+                        //    .AddModelError(
+                        //        newKey,
+                        //        null,
+                        //        element.Value);
+
+                        foreach (var error in element.Value.Errors)
+                        {
+                            newModelStateDictionary
+                                .AddModelError(newKey, error.ErrorMessage);
+                        }
+                    }
+                    //else
+                    //{
+                    //    newModelStateDictionary.AddModelError(newKey, element.Value.Errors.FirstOrDefault()?.ErrorMessage);
+                    //}
+                }
+
+                return newModelStateDictionary;
+            }
+        }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, DefaultValueHandling = DefaultValueHandling.Ignore)]
         [DefaultValue("")]
         public string StackTrace { get; set; }
+        public ModelStateDictionary ModelState { get; }
 
         //public ModelStateDictionary ModelStateAsCamelCase(ModelStateDictionary modelState)
         //{
