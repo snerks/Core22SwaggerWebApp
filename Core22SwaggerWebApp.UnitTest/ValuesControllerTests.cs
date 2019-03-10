@@ -29,9 +29,9 @@ namespace Core22SwaggerWebApp.UnitTest
 
             // Assert
             Assert.NotNull(result);
-            result.Should().BeAssignableTo<ActionResult<IEnumerable<CurrencyGetViewModel>>>();
-
             var resultValue = result.Value;
+            resultValue.Items.Should().BeAssignableTo<IEnumerable<CurrencyGetViewModel>>();
+
             Assert.NotEmpty(resultValue.Items);
         }
     }
