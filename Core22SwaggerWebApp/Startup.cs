@@ -51,6 +51,8 @@ namespace Core22SwaggerWebApp
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddRouting(options => options.LowercaseUrls = true);
+
             services
                 .AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
@@ -139,13 +141,13 @@ namespace Core22SwaggerWebApp
                 .AddHealthChecks()
                     .AddCheck("culture", () =>
                     {
-                        const string requiredCultureIsoCode = "en-GB";
+                        const string RequiredCultureIsoCode = "en-GB";
 
                         var currentUICulture = System.Threading.Thread.CurrentThread.CurrentUICulture;
                         var currentCulture = System.Threading.Thread.CurrentThread.CurrentCulture;
 
-                        var isCurrentUICultureCorrect = currentUICulture.IetfLanguageTag == requiredCultureIsoCode;
-                        var isCurrentCultureCorrect = currentCulture.IetfLanguageTag == requiredCultureIsoCode;
+                        var isCurrentUICultureCorrect = currentUICulture.IetfLanguageTag == RequiredCultureIsoCode;
+                        var isCurrentCultureCorrect = currentCulture.IetfLanguageTag == RequiredCultureIsoCode;
 
                         var areCurrentCultureSettingsCorrect = isCurrentUICultureCorrect && isCurrentCultureCorrect;
 
@@ -156,8 +158,8 @@ namespace Core22SwaggerWebApp
 
                         var data = new Dictionary<string, object>
                         {
-                            ["RequiredCurrentUICulture"] = requiredCultureIsoCode,
-                            ["RequiredCurrentCulture"] = requiredCultureIsoCode,
+                            ["RequiredCurrentUICulture"] = RequiredCultureIsoCode,
+                            ["RequiredCurrentCulture"] = RequiredCultureIsoCode,
 
                             ["CurrentUICulture"] = System.Threading.Thread.CurrentThread.CurrentUICulture,
                             ["CurrentCulture"] = System.Threading.Thread.CurrentThread.CurrentCulture,
@@ -195,7 +197,7 @@ namespace Core22SwaggerWebApp
                             };
 
                             return HealthCheckResult.Unhealthy(
-                                $"Exception : UICulture = [{System.Threading.Thread.CurrentThread.CurrentUICulture}] at {DateTime.Now}", 
+                                $"Exception : UICulture = [{System.Threading.Thread.CurrentThread.CurrentUICulture}] at {DateTime.Now}",
                                 ex,
                                 data);
                         }
@@ -224,8 +226,8 @@ namespace Core22SwaggerWebApp
 
             app.UseRequestLocalization(new RequestLocalizationOptions
             {
-                //DefaultRequestCulture = new RequestCulture("en-GB"),
-                DefaultRequestCulture = new RequestCulture("en-US"),
+                DefaultRequestCulture = new RequestCulture("en-GB"),
+                //DefaultRequestCulture = new RequestCulture("en-US"),
 
                 // Formatting numbers, dates, etc.
                 SupportedCultures = supportedCultures,

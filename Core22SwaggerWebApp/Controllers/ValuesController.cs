@@ -176,9 +176,9 @@ namespace Core22SwaggerWebApp.Controllers
 
         // GET api/values/5
         [HttpGet("{isoCode}")]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesDefaultResponseType]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        //[ProducesResponseType(StatusCodes.Status404NotFound)]
+        //[ProducesDefaultResponseType]
+        //[ProducesResponseType(StatusCodes.Status200OK)]
         public ActionResult<CurrencyGetViewModel> Get(string isoCode)
         {
             if (isoCode == null)
