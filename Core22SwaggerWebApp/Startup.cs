@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -55,7 +56,7 @@ namespace Core22SwaggerWebApp
             services.AddRouting(options => options.LowercaseUrls = true);
 
             services
-                .AddMvc()
+                .AddMvc(c => c.Conventions.Add(new ApiExplorerGroupPerVersionConvention()))
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
                 .AddJsonOptions(options => options.SerializerSettings.Formatting = Formatting.Indented);
 
@@ -93,7 +94,10 @@ namespace Core22SwaggerWebApp
             //    });
 
             // Register the Swagger generator, defining 1 or more Swagger documents
-            services.AddSwaggerGen(c => c.SwaggerDoc("v1", new Info { Title = "My API", Version = "v1" }));
+            services.AddSwaggerGen(c => {
+                c.SwaggerDoc("v0", new Info { Title = "My API", Version = "v0" });
+                c.SwaggerDoc("v1", new Info { Title = "My API", Version = "v1" });
+            });
 
             //Log.Logger = new LoggerConfiguration()
             //    .WriteTo.File("log.txt")
@@ -274,7 +278,12 @@ namespace Core22SwaggerWebApp
 
             // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), 
             // specifying the Swagger JSON endpoint.
-            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1"));
+            //app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1"));
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v0/swagger.json", "V0 Docs");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "V1 Docs");
+            });
 
             if (env.IsDevelopment())
             {
@@ -302,6 +311,29 @@ namespace Core22SwaggerWebApp
             configuration.Bind(config);
             services.AddSingleton(config);
             return config;
+        }
+    }
+
+    public class ApiExplorerGroupPerVersionConvention : IControllerModelConvention
+    {
+        public void Apply(ControllerModel controller)
+        {
+            var controllerNamespace = controller.ControllerType.Namespace; // e.g. "Controllers.V1"
+            var apiVersion = controllerNamespace.Split('.').Last().ToLower();
+
+            if (apiVersion.Length == 2 && apiVersion.StartsWith("v"))
+            {
+                if (apiVersion.EndsWith("0") || apiVersion.EndsWith("1"))
+                {
+                    controller.ApiExplorer.GroupName = apiVersion;
+                    return;
+                }
+            }
+
+            var controllerName = controller.ControllerType.Name; // e.g. "Controllers.V1"
+            apiVersion = controllerName.StartsWith("Legacy") ? "v0" : "v1";
+
+            controller.ApiExplorer.GroupName = apiVersion;
         }
     }
 }
