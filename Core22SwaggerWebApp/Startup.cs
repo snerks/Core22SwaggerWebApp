@@ -17,6 +17,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using Serilog;
 using Swashbuckle.AspNetCore.Swagger;
 
@@ -54,7 +55,9 @@ namespace Core22SwaggerWebApp
             services.AddRouting(options => options.LowercaseUrls = true);
 
             services
-                .AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+                .AddMvc()
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
+                .AddJsonOptions(options => options.SerializerSettings.Formatting = Formatting.Indented);
 
             //        services.AddDbContext<TodoContext>(opt =>
             //opt.UseInMemoryDatabase("TodoList"));
