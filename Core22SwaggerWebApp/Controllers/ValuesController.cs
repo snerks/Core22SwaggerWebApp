@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+using Core22SwaggerWebApp.Models;
 
 namespace Core22SwaggerWebApp.Controllers
 {
@@ -88,36 +89,93 @@ namespace Core22SwaggerWebApp.Controllers
         public Dictionary<string, CurrencyGetViewModel> IsoCodeCurrenciesMap { get; } =
             new Dictionary<string, CurrencyGetViewModel>(StringComparer.CurrentCultureIgnoreCase);
 
-        // GET api/values
-        [HttpGet]
-        public ActionResult<IEnumerable<CurrencyGetViewModel>> Get()
+        //// GET api/values
+        //[HttpGet]
+        //public ActionResult<IEnumerable<CurrencyGetViewModel>> Get()
+        //{
+        //    // var currenciesMap = new Dictionary<string, CurrencyGetViewModel>
+        //    // {
+        //    //     ["GBP"] = new CurrencyGetViewModel("GBP", "£", "Pound sterling"),
+        //    //     ["EUR"] = new CurrencyGetViewModel("EUR", "€", "Euro"),
+        //    //     ["USD"] = new CurrencyGetViewModel("USD", "$", "United States dollar"),
+        //    //     ["AUD"] = new CurrencyGetViewModel("AUD", "$", "Australian dollar"),
+        //    //     ["ABC"] = new CurrencyGetViewModel("ABC", "$", "ABC dollar"),
+        //    //     ["DEF"] = new CurrencyGetViewModel("DEF", "$", "DEF dollar"),
+        //    // };
+
+        //    // foreach (var key in currenciesMap.Keys)
+        //    // {
+        //    //     Logger.LogInformation("In my wallet I have {Key}: {@Currency}", key, currenciesMap[key]);
+        //    // }
+
+        //    // return currenciesMap.Values;
+
+        //    //var items = 
+        //    //    CurrenciesSettings
+        //    //    .GetSection("CustomSettings:Currency:Currencies")
+        //    //    .Get<List<CurrencySettings>>();
+
+        //    var currenciesMap = GetIsoCodeCurrenciesMap();
+
+        //    return currenciesMap.Values;
+        //}
+
+        [HttpGet("{pageNumber?}/{pageSize?}")]
+        [ProducesResponseType(200, Type = typeof(PagedList<CurrencyGetViewModel>))]
+        //[ProducesResponseType(401)]
+        public ActionResult<PagedList<CurrencyGetViewModel>> GetAll(int pageNumber = 1, int pageSize = 10)
         {
-            // var currenciesMap = new Dictionary<string, CurrencyGetViewModel>
-            // {
-            //     ["GBP"] = new CurrencyGetViewModel("GBP", "£", "Pound sterling"),
-            //     ["EUR"] = new CurrencyGetViewModel("EUR", "€", "Euro"),
-            //     ["USD"] = new CurrencyGetViewModel("USD", "$", "United States dollar"),
-            //     ["AUD"] = new CurrencyGetViewModel("AUD", "$", "Australian dollar"),
-            //     ["ABC"] = new CurrencyGetViewModel("ABC", "$", "ABC dollar"),
-            //     ["DEF"] = new CurrencyGetViewModel("DEF", "$", "DEF dollar"),
-            // };
-
-            // foreach (var key in currenciesMap.Keys)
-            // {
-            //     Logger.LogInformation("In my wallet I have {Key}: {@Currency}", key, currenciesMap[key]);
-            // }
-
-            // return currenciesMap.Values;
-
-            //var items = 
-            //    CurrenciesSettings
-            //    .GetSection("CustomSettings:Currency:Currencies")
-            //    .Get<List<CurrencySettings>>();
+            Logger.LogDebug("Getting one page of items");
 
             var currenciesMap = GetIsoCodeCurrenciesMap();
+            var currenciesMapValues = currenciesMap.Values;
 
-            return currenciesMap.Values;
+            var result = 
+                new PagedList<CurrencyGetViewModel>(
+                    currenciesMapValues.AsQueryable(),
+                    pageNumber,
+                    pageSize);
+
+            return result;
         }
+
+        // GET api/values/5
+        [HttpGet("{isoCode}")]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesDefaultResponseType]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public ActionResult<CurrencyGetViewModel> Get(string isoCode)
+        {
+            if (isoCode == null)
+            {
+                return BadRequest();
+            }
+
+            var isoCodeCurrenciesMap = GetIsoCodeCurrenciesMap();
+
+            if (isoCodeCurrenciesMap == null)
+            {
+                return NotFound();
+            }
+
+            var key = isoCode.Trim();
+
+            if (isoCodeCurrenciesMap.ContainsKey(key))
+            {
+                return isoCodeCurrenciesMap[key];
+            }
+
+            return NotFound();
+        }
+
+        //// GET api/values
+        //[HttpGet]
+        //public ActionResult<IEnumerable<CurrencyGetViewModel>> GetPaged()
+        //{
+        //    var currenciesMap = GetIsoCodeCurrenciesMap();
+
+        //    return currenciesMap.Values;
+        //}
 
         private Dictionary<string, CurrencyGetViewModel> GetIsoCodeCurrenciesMap()
         {
@@ -172,35 +230,6 @@ namespace Core22SwaggerWebApp.Controllers
             }
 
             return IsoCodeCurrenciesMap;
-        }
-
-        // GET api/values/5
-        [HttpGet("{isoCode}")]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesDefaultResponseType]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        public ActionResult<CurrencyGetViewModel> Get(string isoCode)
-        {
-            if (isoCode == null)
-            {
-                return BadRequest();
-            }
-
-            var isoCodeCurrenciesMap = GetIsoCodeCurrenciesMap();
-
-            if (isoCodeCurrenciesMap == null)
-            {
-                return NotFound();
-            }
-
-            var key = isoCode.Trim();
-
-            if (isoCodeCurrenciesMap.ContainsKey(key))
-            {
-                return isoCodeCurrenciesMap[key];
-            }
-
-            return NotFound();
         }
 
         //// POST api/values
