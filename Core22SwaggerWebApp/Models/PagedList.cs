@@ -4,27 +4,50 @@ using System.Linq;
 
 namespace Core22SwaggerWebApp.Models
 {
+    using System.ComponentModel.DataAnnotations;
+    using Microsoft.AspNetCore.Mvc;
+
+    namespace Core22SwaggerWebApp.Models
+    {
+        public sealed class PagingOptions
+        {
+            public const int MaximinumPageSize = 100;
+            public const string MaximinumPageSizeText = "100";
+
+            public const string MaximinumPageSizeMessage = 
+                "PageSize must be greater than 0 and less than " + MaximinumPageSizeText + ".";
+
+            [FromQuery]
+            [Range(1, int.MaxValue, ErrorMessage = "Offset must be greater than 0.")]
+            public int? PageNumber { get; set; }
+
+            [FromQuery]
+            [Range(1, MaximinumPageSize, ErrorMessage = MaximinumPageSizeMessage)]
+            public int? PageSize { get; set; }
+        }
+    }
+
     public class PagedList<T>
     {
         public PagedList(
             IQueryable<T> itemsQuery,
-            int pageNumber = 1,
-            int pageSize = 10,
+            int? pageNumberRequested,
+            int? pageSizeRequested,
             int maximumPageSize = 100 /* Server-side limit */)
         {
             ItemsQuery = itemsQuery ?? throw new ArgumentNullException(nameof(itemsQuery));
 
-            PageNumberRequested = pageNumber;
-            PageSizeRequested = pageSize;
+            PageNumberRequested = pageNumberRequested;
+            PageSizeRequested = pageSizeRequested;
 
             // >= 1
-            var pageNumberNormalised = Math.Max(pageNumber, 1);
+            var pageNumberNormalised = Math.Max(pageNumberRequested ?? 1, 1);
 
             // >= 1
             var maximumPageSizeNormalised = Math.Max(maximumPageSize, 1);
 
             // >= 1
-            var pageSizeLowerLimit = Math.Max(pageSize, 1);
+            var pageSizeLowerLimit = Math.Max(pageSizeRequested ?? 10, 1);
 
             // <= maximumPageSizeNormalised
             var pageSizeNormalised = Math.Min(pageSizeLowerLimit, maximumPageSizeNormalised);
@@ -36,8 +59,8 @@ namespace Core22SwaggerWebApp.Models
 
         private IQueryable<T> ItemsQuery { get; } = new List<T>().AsQueryable();
 
-        public int PageNumberRequested { get; } = 1;
-        public int PageSizeRequested { get; } = 10;
+        public int? PageNumberRequested { get; }
+        public int? PageSizeRequested { get; }
 
         public int PageNumber { get; } = 1;
         public int PageSize { get; } = 10;
