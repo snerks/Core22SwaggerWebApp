@@ -142,7 +142,15 @@ namespace Core22SwaggerWebApp.Controllers
             // https://github.com/StefH/System.Linq.Dynamic.Core
             // https://www.nuget.org/packages/Microsoft.EntityFrameworkCore.DynamicLinq/
             // "City == @0 and Orders.Count >= @1", "London", 10
-            var dynamicResults = queryable.Where("Name.Contains(@0)", "sterling"); // .ToList();
+            //var dynamicResults = queryable.Where("Name.Contains(@0)", "sterling"); // .ToList();
+            var dynamicResults = 
+                queryable
+                .Where(
+                    "Name.Contains(@0, @1)", 
+                    "pound", 
+                    StringComparison.InvariantCultureIgnoreCase); // .ToList();
+
+            // .Equals(exchangeAbbrv, StringComparison.InvariantCultureIgnoreCase)
 
             var result = 
                 new PagedList<CurrencyGetViewModel>(

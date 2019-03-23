@@ -147,76 +147,76 @@ namespace Core22SwaggerWebApp
             ConfigurePoco<CustomSettings>(services, Configuration.GetSection("CustomSettings"));
             ConfigurePoco<CurrenciesSettings>(services, Configuration.GetSection("CustomSettings:Currency"));
 
-            services
-                .AddHealthChecks()
-                    .AddCheck("culture", () =>
-                    {
-                        const string RequiredCultureIsoCode = "en-GB";
+            //services
+            //    .AddHealthChecks()
+            //        .AddCheck("culture", () =>
+            //        {
+            //            const string RequiredCultureIsoCode = "en-GB";
 
-                        var currentUICulture = System.Threading.Thread.CurrentThread.CurrentUICulture;
-                        var currentCulture = System.Threading.Thread.CurrentThread.CurrentCulture;
+            //            var currentUICulture = System.Threading.Thread.CurrentThread.CurrentUICulture;
+            //            var currentCulture = System.Threading.Thread.CurrentThread.CurrentCulture;
 
-                        var isCurrentUICultureCorrect = currentUICulture.IetfLanguageTag == RequiredCultureIsoCode;
-                        var isCurrentCultureCorrect = currentCulture.IetfLanguageTag == RequiredCultureIsoCode;
+            //            var isCurrentUICultureCorrect = currentUICulture.IetfLanguageTag == RequiredCultureIsoCode;
+            //            var isCurrentCultureCorrect = currentCulture.IetfLanguageTag == RequiredCultureIsoCode;
 
-                        var areCurrentCultureSettingsCorrect = isCurrentUICultureCorrect && isCurrentCultureCorrect;
+            //            var areCurrentCultureSettingsCorrect = isCurrentUICultureCorrect && isCurrentCultureCorrect;
 
-                        if (areCurrentCultureSettingsCorrect)
-                        {
-                            return HealthCheckResult.Healthy();
-                        }
+            //            if (areCurrentCultureSettingsCorrect)
+            //            {
+            //                return HealthCheckResult.Healthy();
+            //            }
 
-                        var data = new Dictionary<string, object>
-                        {
-                            ["RequiredCurrentUICulture"] = RequiredCultureIsoCode,
-                            ["RequiredCurrentCulture"] = RequiredCultureIsoCode,
+            //            var data = new Dictionary<string, object>
+            //            {
+            //                ["RequiredCurrentUICulture"] = RequiredCultureIsoCode,
+            //                ["RequiredCurrentCulture"] = RequiredCultureIsoCode,
 
-                            ["CurrentUICulture"] = System.Threading.Thread.CurrentThread.CurrentUICulture,
-                            ["CurrentCulture"] = System.Threading.Thread.CurrentThread.CurrentCulture,
-                        };
+            //                ["CurrentUICulture"] = System.Threading.Thread.CurrentThread.CurrentUICulture,
+            //                ["CurrentCulture"] = System.Threading.Thread.CurrentThread.CurrentCulture,
+            //            };
 
-                        return HealthCheckResult.Unhealthy(
-                            $"Incorrect CurrentCulture Settings",
-                            null,
-                            data);
-                    })
-                    .AddCheck("sql", () =>
-                    {
-                        const string _connectionString = "BOGUS";
+            //            return HealthCheckResult.Unhealthy(
+            //                $"Incorrect CurrentCulture Settings",
+            //                null,
+            //                data);
+            //        })
+            //        .AddCheck("sql", () =>
+            //        {
+            //            const string _connectionString = "BOGUS";
 
-                        try
-                        {
-                            using (var connection = new SqlConnection(_connectionString))
-                            {
-                                try
-                                {
-                                    connection.Open();
-                                }
-                                catch (SqlException ex)
-                                {
-                                    return HealthCheckResult.Unhealthy($"SqlException at {DateTime.Now}", ex);
-                                }
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            var data = new Dictionary<string, object>
-                            {
-                                ["CurrentUICulture"] = System.Threading.Thread.CurrentThread.CurrentUICulture,
-                                ["CurrentCulture"] = System.Threading.Thread.CurrentThread.CurrentCulture,
-                            };
+            //            try
+            //            {
+            //                using (var connection = new SqlConnection(_connectionString))
+            //                {
+            //                    try
+            //                    {
+            //                        connection.Open();
+            //                    }
+            //                    catch (SqlException ex)
+            //                    {
+            //                        return HealthCheckResult.Unhealthy($"SqlException at {DateTime.Now}", ex);
+            //                    }
+            //                }
+            //            }
+            //            catch (Exception ex)
+            //            {
+            //                var data = new Dictionary<string, object>
+            //                {
+            //                    ["CurrentUICulture"] = System.Threading.Thread.CurrentThread.CurrentUICulture,
+            //                    ["CurrentCulture"] = System.Threading.Thread.CurrentThread.CurrentCulture,
+            //                };
 
-                            return HealthCheckResult.Unhealthy(
-                                $"Exception : UICulture = [{System.Threading.Thread.CurrentThread.CurrentUICulture}] at {DateTime.Now}",
-                                ex,
-                                data);
-                        }
+            //                return HealthCheckResult.Unhealthy(
+            //                    $"Exception : UICulture = [{System.Threading.Thread.CurrentThread.CurrentUICulture}] at {DateTime.Now}",
+            //                    ex,
+            //                    data);
+            //            }
 
-                        return HealthCheckResult.Healthy();
-                        //return HealthCheckResult.Unhealthy("Sample Description");
-                    });
+            //            return HealthCheckResult.Healthy();
+            //            //return HealthCheckResult.Unhealthy("Sample Description");
+            //        });
 
-            services.AddHealthChecksUI();
+            //services.AddHealthChecksUI();
 
             //.AddUrlGroup(new Uri("http://httpbin.org/status/200"), name: "uri-1")
             //.AddUrlGroup(new Uri("http://httpbin.org/status/200"), name: "uri-2")
@@ -267,14 +267,14 @@ namespace Core22SwaggerWebApp
             // Get Status Code only
             //app.UseHealthChecks("/working");
 
-            // Get Status Code and other info as JSON
-            app.UseHealthChecks("/working", new HealthCheckOptions()
-            {
-                Predicate = _ => true,
-                ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse,
-            });
+            //// Get Status Code and other info as JSON
+            //app.UseHealthChecks("/working", new HealthCheckOptions()
+            //{
+            //    Predicate = _ => true,
+            //    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse,
+            //});
 
-            app.UseHealthChecksUI();
+            //app.UseHealthChecksUI();
 
             // Enable middleware to serve generated Swagger as a JSON endpoint.
             app.UseSwagger();
