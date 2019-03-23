@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Core22SwaggerWebApp.Models;
+using System.Linq.Dynamic;
 
 namespace Core22SwaggerWebApp.Controllers
 {
@@ -130,9 +131,18 @@ namespace Core22SwaggerWebApp.Controllers
             var currenciesMap = GetIsoCodeCurrenciesMap();
             var currenciesMapValues = currenciesMap.Values;
 
+            var queryable = currenciesMapValues.AsQueryable();
+
+            // var staticResults = queryable.Where(c => c.Name.Contains("dollar")); // .ToList();
+
+            // https://github.com/kahanu/System.Linq.Dynamic
+            // https://github.com/kahanu/System.Linq.Dynamic/wiki/Dynamic-Expressions
+            // "City == @0 and Orders.Count >= @1", "London", 10
+            var dynamicResults = queryable.Where("Name.Contains(@0)", "sterling"); // .ToList();
+
             var result = 
                 new PagedList<CurrencyGetViewModel>(
-                    currenciesMapValues.AsQueryable(),
+                    dynamicResults,
                     pageNumber,
                     pageSize);
 

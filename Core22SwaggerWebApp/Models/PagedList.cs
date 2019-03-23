@@ -6,10 +6,11 @@ namespace Core22SwaggerWebApp.Models
 {
     using System.ComponentModel.DataAnnotations;
     using Microsoft.AspNetCore.Mvc;
+    using Newtonsoft.Json;
 
     namespace Core22SwaggerWebApp.Models
     {
-        public sealed class PagingOptions
+        public class PagingOptions
         {
             public const int MaximinumPageSize = 100;
             public const string MaximinumPageSizeText = "100";
@@ -19,12 +20,14 @@ namespace Core22SwaggerWebApp.Models
 
             [FromQuery]
             [Range(1, int.MaxValue, ErrorMessage = "Offset must be greater than 0.")]
-            [Display(Name ="pageNumber")]
+            [Display(Name = "pageNumber")]
+            [JsonProperty(PropertyName = "pageNumber")]
             public int? PageNumber { get; set; }
 
             [FromQuery]
             [Range(1, MaximinumPageSize, ErrorMessage = MaximinumPageSizeMessage)]
             [Display(Name = "pageSize")]
+            [JsonProperty(PropertyName = "pageNumber")]
             public int? PageSize { get; set; }
         }
     }

@@ -8,6 +8,7 @@ using Core22SwaggerWebApp.Models.Core22SwaggerWebApp.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace Core22SwaggerWebApp.Controllers
 {

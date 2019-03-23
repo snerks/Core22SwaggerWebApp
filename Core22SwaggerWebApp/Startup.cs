@@ -19,6 +19,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using Serilog;
 using Swashbuckle.AspNetCore.Swagger;
 
@@ -45,7 +46,10 @@ namespace Core22SwaggerWebApp
             services
                 .AddMvc(c => c.Conventions.Add(new ApiExplorerGroupPerVersionConvention()))
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
-                .AddJsonOptions(options => options.SerializerSettings.Formatting = Formatting.Indented);
+                .AddJsonOptions(options => {
+                    options.SerializerSettings.Formatting = Formatting.Indented;
+                    //options.SerializerSettings.ContractResolver = new DefaultContractResolver();
+                });
 
             //        services.AddDbContext<TodoContext>(opt =>
             //opt.UseInMemoryDatabase("TodoList"));
@@ -80,10 +84,22 @@ namespace Core22SwaggerWebApp
 
             //    });
 
+            //try
+            //{
+            //    var value = "A";
+            //    var camelCased = char.ToLowerInvariant(value[0]) + value.Substring(1);
+            //}
+            //catch (Exception ex)
+            //{
+            //    Console.WriteLine(ex.Message);
+            //    throw;
+            //}
+
             // Register the Swagger generator, defining 1 or more Swagger documents
             services.AddSwaggerGen(c => {
                 c.SwaggerDoc("v0", new Info { Title = "My API", Version = "v0" });
                 c.SwaggerDoc("v1", new Info { Title = "My API", Version = "v1" });
+                c.EnableAnnotations();
             });
 
             //Log.Logger = new LoggerConfiguration()
