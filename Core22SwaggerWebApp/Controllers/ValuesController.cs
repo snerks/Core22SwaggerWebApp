@@ -137,6 +137,10 @@ namespace Core22SwaggerWebApp.Controllers
 
             // https://github.com/kahanu/System.Linq.Dynamic
             // https://github.com/kahanu/System.Linq.Dynamic/wiki/Dynamic-Expressions
+
+            // https://stackoverflow.com/questions/41244/dynamic-linq-orderby-on-ienumerablet-iqueryablet
+            // https://github.com/StefH/System.Linq.Dynamic.Core
+            // https://www.nuget.org/packages/Microsoft.EntityFrameworkCore.DynamicLinq/
             // "City == @0 and Orders.Count >= @1", "London", 10
             var dynamicResults = queryable.Where("Name.Contains(@0)", "sterling"); // .ToList();
 
