@@ -97,9 +97,10 @@ namespace Core22SwaggerWebApp
 
             // Register the Swagger generator, defining 1 or more Swagger documents
             services.AddSwaggerGen(c => {
-                c.SwaggerDoc("v0", new Info { Title = "My API", Version = "v0" });
+                //c.SwaggerDoc("v0", new Info { Title = "My API", Version = "v0" });
                 c.SwaggerDoc("v1", new Info { Title = "My API", Version = "v1" });
                 c.EnableAnnotations();
+                c.DescribeAllParametersInCamelCase();
             });
 
             //Log.Logger = new LoggerConfiguration()
@@ -284,7 +285,7 @@ namespace Core22SwaggerWebApp
             //app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1"));
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v0/swagger.json", "V0 Docs");
+                //c.SwaggerEndpoint("/swagger/v0/swagger.json", "V0 Docs");
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "V1 Docs");
             });
 

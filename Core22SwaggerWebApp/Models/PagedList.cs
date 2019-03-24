@@ -20,14 +20,14 @@ namespace Core22SwaggerWebApp.Models
 
             [FromQuery]
             [Range(1, int.MaxValue, ErrorMessage = "Offset must be greater than 0.")]
-            [Display(Name = "pageNumber")]
-            [JsonProperty(PropertyName = "pageNumber")]
+            //[Display(Name = "pageNumber")]
+            //[JsonProperty(PropertyName = "pageNumber")]
             public int? PageNumber { get; set; }
 
             [FromQuery]
             [Range(1, MaximinumPageSize, ErrorMessage = MaximinumPageSizeMessage)]
-            [Display(Name = "pageSize")]
-            [JsonProperty(PropertyName = "pageNumber")]
+            //[Display(Name = "pageSize")]
+            //[JsonProperty(PropertyName = "pageNumber")]
             public int? PageSize { get; set; }
         }
     }
